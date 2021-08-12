@@ -1,10 +1,8 @@
 package bitmap
 
 import (
-	"fmt"
-	"runtime"
+	"st/profile"
 	"testing"
-	"time"
 )
 
 func TestBitmap(t *testing.T) {
@@ -56,36 +54,23 @@ func TestMisc(t *testing.T) {
 	print(a)
 }
 
-func timed(f func()) {
-	s1 := time.Now().UnixNano()
-	f()
-	fmt.Printf("Time used: %v ms\n", (time.Now().UnixNano()-s1)/1000)
-}
-
 func TestMem(t *testing.T) {
-	var m runtime.MemStats
-	runtime.ReadMemStats(&m)
-	m1 := m.Alloc
 
 	SIZE := 300000000
 	a := make([]bool, SIZE)
 	print("=====Using boolean array: =====\n")
-	timed(func() {
+	profile.TimeSpaced(func() {
 		for i := 0; i < SIZE; i++ {
 			a[i] = true
 		}
-	})
-	runtime.ReadMemStats(&m)
-	m2 := m.Alloc - m1
-	fmt.Printf("Memory Used: %v\n", m2)
+	})()
 
 	print("=====Using BitMap=====\n")
-	timed(func() {
+	profile.TimeSpaced(func() {
 		a2 := NewBitMap(SIZE)
 		for i := 0; i < SIZE; i++ {
 			a2.UnsafeSet(i)
 		}
-	})
-	runtime.ReadMemStats(&m)
-	fmt.Printf("Memory Used: %v\n", m.Alloc-m2)
+	})()
+
 }
